@@ -2,12 +2,15 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import nltk
+import time
 from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 from nltk.tokenize import word_tokenize
 from nltk.stem.wordnet import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
+
 
 
 # Loading
@@ -46,12 +49,20 @@ X_train['Text'] = X_train['Text'].str.lower()
 # Tokenization (with Punctuation, Special Character, and Whitespace Removal via Regexp)
 
 # Regexp tokenizer
-print(X_train.dtypes)
+custom_s_time = time.perf_counter()
 tokenizer = RegexpTokenizer(r'\w+')
 X_train['tokenized_summary'] = X_train['Summary'].apply(word_tokenize)
-X_train['tokenized_text'] = X_train['Text'].apply(tokenizer.tokenize)
+# X_train['tokenized_text'] = X_train['Text'].apply(tokenizer.tokenize)
+custom_f_time = time.perf_counter()
+print('custom vectorizer took: ' + str(custom_f_time - custom_s_time) + 'seconds')
 
-print(X_train.head()[['tokenized_summary', 'tokenized_text']])
+tfidf_s_time = time.perf_counter()
+vectorizer = TfidfVectorizer(strip_accents=ascii, lowercase=True, preprocessor=None, tokenizer=None, analyzer='word', stop_words='english', ngram_range=(1, 1))
+# X_train['tokenized_text'] = X_train['Text'].apply(vectorizer.fit_transform)
+features = vectorizer.fit_transform(X_train['Text'])
+tfidf_f_time = time.perf_counter()
+print('tfidf vectorizer took: ' + str(tfidf_f_time - tfidf_s_time) + 'seconds')
+
 # Stopwords
 
 # remove all words below length 2
@@ -74,7 +85,7 @@ print(X_train.head()[['tokenized_summary', 'tokenized_text']])
 # helpfulness error and convertion
 # datetime processing
 
-
+# save the proprocessed data in to a panda file to be imported later in the prediction file. Use two separate files to avoid accumulating runtime
 
 # do feature extraction on submission file after you're finished with the training set, know how you predicted training data
 

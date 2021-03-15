@@ -8,6 +8,7 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
+from scipy.sparse import hstack
 import imblearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
@@ -95,12 +96,47 @@ X_submission['Text'] = X_submission['Text'].apply(fast_stop)
 # Vectorizer
 print("Vectorization - Fitting...")
 vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.9, max_features = 10000).fit(X_train['Text'])
+vectorizer_s = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.9, max_features = 3000).fit(X_train['Summary'])
 print("Vectorization - Transforming...")
 X_train_vect = vectorizer.transform(X_train['Text'])
 X_submission_vect = vectorizer.transform(X_submission['Text'])
+X_train_vect_s = vectorizer_s.transform(X_train['Summary'])
+X_submission_vect_s = vectorizer_s.transform(X_submission['Summary'])
+
+
+
+
+
+
+
+print(len(X_train_vect))
+print(len(X_train_vect)[0])
+print(len(X_train_vect_s))
+print(len(X_train_vect_s)[0])
+X_train_vect = hstack((X_train_vect, X_train_vect_s))
+print(len(X_train_vect))
+print(len(X_train_vect_s)[0])
+
+print(len(X_submission_vect))
+print(len(X_submission_vect)[0])
+print(len(X_submission_vect_s))
+print(len(X_submission_vect_s)[0])
+X_submission_vect = hstack((X_submission_vect, X_submission_vect_s))
+print(len(X_submission_vect))
+print(len(X_submission_vect_s)[0])
+
+# collapse the vectors before you do svd on them
+# increase your svd sample size to account for both features, know that you will have longer runtimes, change the column array as well 
+
+
+
+
+
+
+
 print("Vectorization - SVD...")
 svd_s_time = time.perf_counter()
-svd = TruncatedSVD(n_components=2000, random_state=0)
+svd = TruncatedSVD(n_components=2500, random_state=0)
 X_train_vect = svd.fit_transform(X_train_vect)
 print(svd.explained_variance_ratio_.sum())
 X_submission_vect = svd.fit_transform(X_submission_vect)
@@ -108,25 +144,14 @@ print(svd.explained_variance_ratio_.sum())
 svd_f_time = time.perf_counter()
 print('SVD took: ' + str(svd_f_time - svd_s_time) + ' seconds')
 print("Vectorization - Creating Pandas df...")
-X_train_df = pd.DataFrame(X_train_vect, columns=np.arange(2000)).set_index(X_train.index.values)
-X_submission_df = pd.DataFrame(X_submission_vect, columns=np.arange(2000)).set_index(X_submission.index.values)
+X_train_df = pd.DataFrame(X_train_vect, columns=np.arange(2500)).set_index(X_train.index.values)
+X_submission_df = pd.DataFrame(X_submission_vect, columns=np.arange(2500)).set_index(X_submission.index.values)
 # X_train_df = pd.DataFrame(X_train_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_train.index.values)
 # X_submission_df = pd.DataFrame(X_submission_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_submission.index.values)
 print("Vectorization - Joining with Original df...")
 # X_train and X_submission below contains original columns with tfidf 
 X_train = X_train.join(X_train_df)
 X_submission = X_submission.join(X_submission_df)
-
-
-
-
-
-X_train = X_train.replace([np.inf, -np.inf], np.nan)
-X_submission = X_submission.replace([np.inf, -np.inf], np.nan)
-print(X_train.isnull().values.any())
-print(X_submission.isnull().values.any())
-
-
 
 
 # Stratified Train/Validation Split

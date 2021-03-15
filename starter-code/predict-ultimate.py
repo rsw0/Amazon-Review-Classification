@@ -27,7 +27,7 @@ X_train = pd.read_csv("./data/small_train.csv")
 X_submission = pd.read_csv("./data/small_submission.csv")
 
 
-print(X_train['Score'].value_counts().head())
+print(X_train['Score'].value_counts().h ead())
 
 # Subsetting Columns
 print("Dropping unnecessary columns...")
@@ -91,9 +91,11 @@ X_train['Text'] = X_train['Text'].apply(fast_stop)
 
 print("vectorizer...")
 vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2)).fit(X_train['Text'])
-
+print("transformer...")
 X_train_vect = vectorizer.transform(X_train['Text'])
+print("to df")
 X_train_df = pd.DataFrame(X_train_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_train.index.values)
+print("joining dfs")
 X_train_with_tfidf = X_train.join(X_train_df)
 print(X_train_with_tfidf.shape)
 print(X_train_with_tfidf.head())
@@ -134,7 +136,7 @@ print(features)
 # how are bigrams handled
 # should you use a max_features to limit it?
 
-
+# think about increasing the max_features to see where it take you?
 '''
 
 

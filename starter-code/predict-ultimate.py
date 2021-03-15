@@ -17,14 +17,19 @@ Y_train = pd.read_pickle("./data/Y_train.pkl")
 Y_validation = pd.read_pickle("./data/Y_validation.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
 print(X_train.shape)
-print(list(X_train))
-print(Y_train.shape)
-print(list(Y_train))
+print(list(X_train)[:10])
+print(X_validation.shape)
+print(list(X_validation)[:10])
 
 
 ####### should you remove the text associated with them????
 X_train = X_train.drop(columns=['Summary', 'Text'])
 Y_train = Y_train.drop(columns=['Summary', 'Text'])
+
+print(X_train.shape)
+print(list(X_train)[:10])
+print(X_validation.shape)
+print(list(X_validation)[:10])
 
 # Learn the model
 model = KNeighborsClassifier(n_neighbors=10).fit(X_train, Y_train)

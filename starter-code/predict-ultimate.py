@@ -25,11 +25,23 @@ X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
 
 
+
+
+
+
+print(X_submission.isnull().values.any())
+print(X_submission[X_submission.apply(lambda x: any(np.isinf(x)), axis=1)])
+
+
+
+
+
 # Learn the model
 model = KNeighborsClassifier(n_neighbors=10).fit(X_train, Y_train)
 
 # Predict the score using the model
 Y_validation_predictions = model.predict(X_validation)
+# does the ID column affect my predictions? search online
 X_submission['Score'] = model.predict(X_submission)
 
 # Evaluate your model on the validation set

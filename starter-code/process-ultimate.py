@@ -128,8 +128,8 @@ X_submission = X_submission.join(X_submission_df)
 
 
 
-print(X_train.columns.to_series()[np.isinf(X_train).any()])
-print(X_submission.columns.to_series()[np.isinf(X_submission).any()])
+print(X_train[X_train.apply(lambda x: any(np.isinf(x)), axis=1)])
+print(X_submission[X_submission.apply(lambda x: any(np.isinf(x)), axis=1)])
 
 
 

@@ -101,7 +101,7 @@ X_submission['Text'] = X_submission['Text'].apply(fast_stop)
 
 # Vectorizer
 print("Vectorization - Fitting...")
-vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.9, max_features = 20000).fit(X_train['Text'])
+vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.9, max_features = 10000).fit(X_train['Text'])
 print("Vectorization - Transforming...")
 X_train_vect = vectorizer.transform(X_train['Text'])
 X_submission_vect = vectorizer.transform(X_submission['Text'])
@@ -115,8 +115,8 @@ print(svd.explained_variance_ratio_.sum())
 tfidf_f_time = time.perf_counter()
 print('svd took: ' + str(tfidf_f_time - tfidf_s_time) + ' seconds')
 print("Vectorization - Creating Pandas df...")
-X_train_df = pd.DataFrame(X_train_vect, columns=vectorizer.get_feature_names()).set_index(X_train.index.values)
-X_submission_df = pd.DataFrame(X_submission_vect, columns=vectorizer.get_feature_names()).set_index(X_submission.index.values)
+X_train_df = pd.DataFrame(X_train_vect, columns=np.arange(3000).set_index(X_train.index.values)
+X_submission_df = pd.DataFrame(X_submission_vect, columns=np.arange(3000).set_index(X_submission.index.values)
 # X_train_df = pd.DataFrame(X_train_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_train.index.values)
 # X_submission_df = pd.DataFrame(X_submission_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_submission.index.values)
 print("Vectorization - Joining with Original df...")
@@ -133,7 +133,7 @@ print(list(X_submission))
 
 # Stratified Train/Validation Split
 print("Train/Validation Split...")
-X_train, X_test, Y_train, Y_test = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
+X_train, X_test, Y_train, Y_test = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.30, random_state=0, stratify=X_train['Score'])
 
 
 # Oversampling & Undersampling

@@ -35,17 +35,10 @@ X_train = X_train.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', '
 X_submission = X_submission.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time', 'Score'])
 
 
-# A test text can be used to test individual steps
-testtext = "He ended up burning his fingers ve poking dc someone else's fire os."
-# testtext = "Nick likes to PLAYful played tried attempted delightful footBall, aren't @#% @ #^ &&%$*!!@#$ however   you're don't he's is not'$ t  os o FOND of ten'nis ab bc cd"
-
-print("pre-na handling shape")
-print(X_train.shape)
 # Handling NA
 print("Handling NA...")
 X_train.dropna(inplace=True)
-print(X_train.shape)
-print("post-na handling shape")
+
 
 # Converting objects to strings
 print("Converting to strings...")

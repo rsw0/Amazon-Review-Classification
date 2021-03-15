@@ -81,26 +81,10 @@ X_train['Summary'] = X_train['Summary'].apply(fast_stop)
 X_train['Text'] = X_train['Text'].apply(fast_stop)
 testtext = fast_stop(testtext)
 print(testtext)
+print()
+print(X_train.head()[['Summary','Text']])
 
-
-
-# non-word parameters:
-# word count
-# character count
-# punctuations count
-# average word length
-# average sentence length
-
-
-# do oversampling after completely processing the dataset, apply processing to all datasets
-
-
-
-
-
-
-
-# save the proprocessed data in to a panda file to be imported later in the prediction file. Use two separate files to avoid accumulating runtime
+# Oversampling through Synonym
 
 
 
@@ -157,10 +141,17 @@ submission.to_csv("./data/submission.csv", index=False)
 '''
 
 # next steps:
+# use non-word parameters
+#   word count
+#   character count
+#   punctuations count
+#   average word length
+#   average sentence length
 # bigrams (how do you do it with stopwords removed?)
 # punctuations indicating emotion, make that into a binary column?
 # helpfulness columnn actually useful?
 # datetime processing? check review time and align more closely to the review time within that period
+# combine gradient boosting method with random forest. How?
 
 
 

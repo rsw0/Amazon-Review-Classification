@@ -1,3 +1,50 @@
+import pandas as pd
+import numpy as np
+
+# try grid search logistic regression with tfidf normalization first
+# Learn the model
+# check saved bookmarks on random forest
+# naive bayes multinomial NB, don't need to be vectorized?
+# xgboost with random forest
+
+# Import Saved Pickles
+print("Importing Data...")
+X_train = pd.read_pickle("./data/X_train.pkl")
+X_validation = pd.read_pickle("./data/X_validation.pkl")
+Y_train = pd.read_pickle("./data/Y_train.pkl")
+Y_validation = pd.read_pickle("./data/Y_validation.pkl")
+X_submission = pd.read_pickle("./data/X_submission.pkl")
+
+
+# Learn the model
+model = KNeighborsClassifier(n_neighbors=3).fit(X_train_processed, Y_train)
+
+# Predict the score using the model
+Y_validation_predictions = model.predict(X_validation_processed)
+X_submission['Score'] = model.predict(X_submission)
+
+# Evaluate your model on the validation set
+print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
+
+# Plot a confusion matrix
+cm = confusion_matrix(Y_validation, Y_validation_predictions, normalize='true')
+sns.heatmap(cm, annot=True)
+plt.title('Confusion matrix of the classifier')
+plt.xlabel('Predicted')
+plt.ylabel('True')
+cm.savefig('matrix.png', dpi=fig.dpi)
+
+# Create the submission file
+submission = X_submission[['Id', 'Score']]
+submission.to_csv("./data/submission.csv", index=False)
+
+
+
+
+
+
+
+
 # next steps:
 # add summary into the equation as well. two vectors tfidf. How? fit two models and linearly weight their outputs? search combine two tfidf together (e.g., title and text) online
 # add non-word features
@@ -17,33 +64,3 @@
 #   punctuations count (more = more extreme?)
 #   punctions such as !!! and ??? indicating emotions (Excitement vs confusion?)
 #   textmojis such as :)
-
-
-'''
-# try grid search logistic regression with tfidf normalization first
-# Learn the model
-# check saved bookmarks on random forest
-# naive bayes multinomial NB, don't need to be vectorized?
-# xgboost with random forest
-
-model = KNeighborsClassifier(n_neighbors=3).fit(X_train_processed, Y_train)
-
-# Predict the score using the model
-Y_test_predictions = model.predict(X_test_processed)
-X_submission['Score'] = model.predict(X_submission_processed)
-
-# Evaluate your model on the testing set
-print("RMSE on testing set = ", mean_squared_error(Y_test, Y_test_predictions))
-
-# Plot a confusion matrix
-cm = confusion_matrix(Y_test, Y_test_predictions, normalize='true')
-sns.heatmap(cm, annot=True)
-plt.title('Confusion matrix of the classifier')
-plt.xlabel('Predicted')
-plt.ylabel('True')
-plt.show()
-
-# Create the submission file
-submission = X_submission[['Id', 'Score']]
-submission.to_csv("./data/submission.csv", index=False)
-'''

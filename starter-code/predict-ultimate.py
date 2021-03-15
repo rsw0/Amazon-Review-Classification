@@ -84,28 +84,30 @@ print(testtext)
 print()
 print(X_train.head()[['Summary','Text']])
 
+
 # Oversampling through Synonym
+# by synonym, each time randomized, until underrepresented categories reach 
+# only want strongly correlated terms
+# translate features and other stuff
 
 
 
 
+# TURN EVERY PARAMETER OFF!!!!!! CHECK EVEYRTHING
 
-
-
-'''
-# do you need to reconstruct it to a string or can you pass in a vector? tfidf on tokenized input
-# checkout what tfidf vectorizer offers
+vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), max_features = 20000)
 tfidf_s_time = time.perf_counter()
-vectorizer = TfidfVectorizer(strip_accents=ascii, lowercase=True, preprocessor=None, tokenizer=None, analyzer='word', stop_words='english', ngram_range=(1, 1))
-#X_train['tokenized_text'] = X_train['Text'].apply(vectorizer.fit_Transform)
 features = vectorizer.fit_transform(X_train['Text'])
 tfidf_f_time = time.perf_counter()
+print(features.shape)
 print('tfidf vectorizer took: ' + str(tfidf_f_time - tfidf_s_time) + ' seconds')
 print(features)
+
+
+# play around with max diff and min diff?
+
+
 '''
-
-
-
 # do this after you've done the processing
 # Train/Test split
 X_train, X_test, Y_train, Y_test = train_test_split(
@@ -114,10 +116,11 @@ X_train, X_test, Y_train, Y_test = train_test_split(
         test_size=1/4.0,
         random_state=0
     )
-
+'''
 
 '''
 # Learn the model
+# check saved bookmarks on random forest
 model = KNeighborsClassifier(n_neighbors=3).fit(X_train_processed, Y_train)
 
 # Predict the score using the model

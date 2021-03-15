@@ -60,8 +60,8 @@ print("number of reviews each year")
 
 
 
-# trainingSet['Score'].value_counts().plot(kind='bar', legend=True, alpha=.5)
-# plt.show()
+trainingSet['Score'].value_counts().plot(kind='bar', legend=True, alpha=.5)
+plt.show()
 
 # trainingSet['UserId'].value_counts().nsmallest(25).plot(kind='bar', legend=True, alpha=.5)
 # plt.show()

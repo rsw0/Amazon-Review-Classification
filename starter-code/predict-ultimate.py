@@ -88,7 +88,7 @@ X_train['Text'] = X_train['Text'].apply(fast_stop)
 # print(X_train.head()[['Summary','Text']])
 
 print("vectorizer...")
-vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2)).fit(X_train['Text'])
+vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), max_features = 40000).fit(X_train['Text'])
 print("transformer...")
 X_train_vect = vectorizer.transform(X_train['Text'])
 print("to df")

@@ -27,8 +27,6 @@ X_train = pd.read_csv("./data/small_train.csv")
 X_submission = pd.read_csv("./data/small_submission.csv")
 
 
-print(X_train['Score'].value_counts().h ead())
-
 # Subsetting Columns
 print("Dropping unnecessary columns...")
 X_train = X_train.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time'])

@@ -7,7 +7,7 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import wordnet
-import spacy
+import imblearn
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
@@ -16,107 +16,132 @@ import matplotlib.pyplot as plt
 
 
 # # Loading
+# print("Loading data...")
 # X_train = pd.read_csv("./data/X_train.csv")
 # X_submission = pd.read_csv("./data/X_submission.csv")
 
 
 # Loading (small test set)
+print("Loading data...")
 X_train = pd.read_csv("./data/small_train.csv")
 X_submission = pd.read_csv("./data/small_submission.csv")
 
 
-# A test text to test individual steps
+print(X_train['Score'].value_counts().head())
+
+# Subsetting Columns
+print("Dropping unnecessary columns...")
+X_train = X_train.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time'])
+X_submission = X_submission.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time'])
+
+
+# A test text can be used to test individual steps
 testtext = "He ended up burning his fingers ve poking dc someone else's fire os."
 # testtext = "Nick likes to PLAYful played tried attempted delightful footBall, aren't @#% @ #^ &&%$*!!@#$ however   you're don't he's is not'$ t  os o FOND of ten'nis ab bc cd"
 
 
 # Converting objects to strings
-X_train['ProductId']= X_train['ProductId'].apply(str)
-X_train['UserId']= X_train['UserId'].apply(str)
-X_train['Summary']= X_train['Summary'].apply(str)
-X_train['Text']= X_train['Text'].apply(str)
+print("Converting to strings...")
+X_train['Summary'] = X_train['Summary'].apply(str)
+X_train['Text'] = X_train['Text'].apply(str)
 
 
 # Drop NA
+print("Dropping NA...")
 X_train.dropna()
 # to get the number of Null: X_train.isna().sum()
 
 
 # Lowercase
+print("Converting to lowercase...")
 X_train['Summary'] = X_train['Summary'].str.lower()
 X_train['Text'] = X_train['Text'].str.lower()
-testtext = testtext.lower()
-print(testtext)
 
 
 # Punctuation, Special Character & Whitespace (adjusted for stopwords)
+print("Removing punctuations and special characters...")
 def fast_rem(my_string):
     return(re.sub(r'[^a-z \']', '', my_string).replace('\'', ' '))
 X_train['Summary'] = X_train['Summary'].apply(fast_rem)
 X_train['Text'] = X_train['Text'].apply(fast_rem)
-testtext = fast_rem(testtext)
-print(testtext)
 
 
 # Tokenization, Lemmatization
+print("Tokenization and Lemmatization...")
 lemmatizer = WordNetLemmatizer()
 tag_dict = {"J": wordnet.ADJ, "N": wordnet.NOUN, "V": wordnet.VERB, "R": wordnet.ADV}
 def fast_lemma(sentence):
     return (" ".join([lemmatizer.lemmatize(key[0], tag_dict.get(key[1][0], wordnet.NOUN)) for key in nltk.pos_tag(word_tokenize(sentence))]))
-t1_start = time.perf_counter()
+# t1_start = time.perf_counter()
 X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
 X_train['Text'] = X_train['Text'].apply(fast_lemma)
-t1_stop = time.perf_counter()
-print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
-print(X_train.head()[['Summary','Text']])
-testtext = fast_lemma(testtext)
-print(testtext)
+#t1_stop = time.perf_counter()
+#print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
+#print(X_train.head()[['Summary','Text']])
 
 
 # Stopword & Noise Removal (Token with length below 2)
+print("Removing Stopwords...")
 cachedStopWords = stopwords.words("english")
 def fast_stop(my_string):
     return(' '.join([word for word in my_string.split() if word not in cachedStopWords and len(word) > 2]))
 X_train['Summary'] = X_train['Summary'].apply(fast_stop)
 X_train['Text'] = X_train['Text'].apply(fast_stop)
-testtext = fast_stop(testtext)
-print(testtext)
-print()
-print(X_train.head()[['Summary','Text']])
+# print(X_train.head()[['Summary','Text']])
+
+print("vectorizer...")
+vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2)).fit(X_train['Text'])
+
+X_train_vect = vectorizer.transform(X_train['Text'])
+X_train_df = pd.DataFrame(X_train_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_train.index.values)
+X_train_with_tfidf = X_train.join(X_train_df)
+print(X_train_with_tfidf.shape)
+print(X_train_with_tfidf.head())
 
 
-# Oversampling through Synonym
-# by synonym, each time randomized, until underrepresented categories reach 
-# only want strongly correlated terms
-# translate features and other stuff
+# Stratified Train/Validation Split
+print("Train/Validation Split...")
+X_train, X_test, Y_train, Y_test = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
+
+'''
+# Undersampling
+print("Undersampling...")
+
+
+# now apply that same set of features to X_submission
+X_submission_vect = vectorizer.transform(X_submission['Text'])
+X_submission_df = pd.DataFrame(X_submission_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_submission.index.values)
+X_submission_with_tfidf = X_submission.join(X_submission_df)
+
+# now you can build your model on X_train_with_tfidf
 
 
 
 
-# TURN EVERY PARAMETER OFF!!!!!! CHECK EVEYRTHING
 
+# Tf-idf
 vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), max_features = 20000)
 tfidf_s_time = time.perf_counter()
 features = vectorizer.fit_transform(X_train['Text'])
+X = vectorizer.fit_transform(X).toarray()
 tfidf_f_time = time.perf_counter()
 print(features.shape)
 print('tfidf vectorizer took: ' + str(tfidf_f_time - tfidf_s_time) + ' seconds')
 print(features)
 
-
 # play around with max diff and min diff?
 
+# how are bigrams handled
+# should you use a max_features to limit it?
+
 
 '''
-# do this after you've done the processing
-# Train/Test split
-X_train, X_test, Y_train, Y_test = train_test_split(
-        X_train.drop(['Score'], axis=1),
-        X_train['Score'],
-        test_size=1/4.0,
-        random_state=0
-    )
-'''
+
+
+
+
+
+
 
 '''
 # Learn the model
@@ -143,21 +168,20 @@ submission = X_submission[['Id', 'Score']]
 submission.to_csv("./data/submission.csv", index=False)
 '''
 
+
 # next steps:
-# use non-word parameters
-#   word count
-#   character count
-#   punctuations count
-#   average word length
-#   average sentence length
-# bigrams (how do you do it with stopwords removed?)
-# punctuations indicating emotion, make that into a binary column?
-# helpfulness columnn actually useful?
-# datetime processing? check review time and align more closely to the review time within that period
-# combine gradient boosting method with random forest. How?
-
-
-
+# add summary into the equation as well. two vectors tfidf. How? fit two models and linearly weight their outputs? search combine two tfidf together (e.g., title and text) online
+# dont do it in the blind
+# try other models (boosting methods, SVM (use PCA if you do so), logistic)
+# aggregate several models, how? linear regression of the output weightings? can each method give probabilistic weightings? search online on how to
+# combine boosting and bagging methods. Don't do it in the blind
+# oversampling with synonyms then undersampling (generate how much?) What's a good amount to undersample to?
+# kfold cross validation (You can to properly construct CV predictions for each train fold and then build a 2nd level model using the 1st level models predictions as input features. )
+# Other text parameters
+#   word count/length of review (do all of these this prior to tokenizing and removals)
+#   punctuations count (more = more extreme?)
+#   punctions such as !!! and ??? indicating emotions (Excitement vs confusion?)
+#   textmojis such as :)
 
 
 '''

@@ -22,15 +22,15 @@ X_train = pd.read_csv("./data/small_train.csv")
 X_submission = pd.read_csv("./data/small_submission.csv")
 
 
+# A test text to test individual steps
+testtext = "Nick likes to PLAY footBall, however   you're dont' he is not'$ t  os o FOND of tennis ab bc cd"
+
+
 # Converting objects to strings
 X_train['ProductId']= X_train['ProductId'].apply(str)
 X_train['UserId']= X_train['UserId'].apply(str)
 X_train['Summary']= X_train['Summary'].apply(str)
 X_train['Text']= X_train['Text'].apply(str)
-
-
-# A test text to test individual steps
-testtext = "Nick likes to PLAY footBall, however    he is not'$ t  os o FOND of tennis ab bc cd"
 
 
 # Drop NA
@@ -45,7 +45,30 @@ testtext = testtext.lower()
 print(testtext)
 
 
-# Stopword & Whitespaces
+# Punctuation, Special Character & Whitespace (Retaining ' for stopwords and lemmatizer)
+def fast_rem(my_string):
+    return(re.sub(r'[^a-z \']', '', my_string))
+X_train['Summary'] = X_train['Summary'].apply(fast_rem)
+X_train['Text'] = X_train['Text'].apply(fast_rem)
+testtext = fast_rem(testtext)
+print(testtext)
+
+
+# Tokenization, Lemmatization & Removing Noise (Tokens below Length 2)
+nlp = spacy.load('en_core_web_sm', disable=["parser", "ner"]) 
+def fast_lemma(my_string):
+    spacy_form = nlp(my_string)
+    return(" ".join([word.lemma_ for word in spacy_form if len(word) > 2]))
+testtext = fast_lemma(testtext)
+print(testtext)
+t1_start = time.perf_counter()
+X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
+X_train['Text'] = X_train['Text'].apply(fast_lemma)
+t1_stop = time.perf_counter()
+print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
+
+
+# Stopword
 cachedStopWords = stopwords.words("english")
 def fast_stop(my_string):
     return(' '.join([word for word in my_string.split() if word not in cachedStopWords]))
@@ -55,35 +78,6 @@ testtext = fast_stop(testtext)
 print(testtext)
 
 
-# # Old Regexp Tokenization (with Punctuation, Special Character, and Whitespace Removal via Regexp Tokenizer)
-# tokenizer = RegexpTokenizer(r'\w+')
-# X_train['Summary'] = X_train['Summary'].apply(tokenizer.tokenize)
-# X_train['Text'] = X_train['Text'].apply(tokenizer.tokenize)
-
-
-# Punctuation & Special Character
-def fast_rem(my_string):
-    return(re.sub(r'[^a-z ]', '', my_string))
-X_train['Summary'] = X_train['Summary'].apply(fast_rem)
-X_train['Text'] = X_train['Text'].apply(fast_rem)
-testtext = fast_rem(testtext)
-print(testtext)
-
-
-# Tokenization, Lemmatization & Removing Noise (Tokens below Length 2)
-nlp = spacy.load('en_core_web_sm') 
-def fast_lemma(my_string):
-    spacy_form = nlp(my_string)
-    return(" ".join([word.lemma_ for word in spacy_form if len(word) > 2]))
-
-testtext = fast_lemma(testtext)
-print(testtext)
-
-t1_start = time.perf_counter()
-X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
-X_train['Text'] = X_train['Text'].apply(fast_lemma)
-t1_stop = time.perf_counter()
-print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
 
 
 

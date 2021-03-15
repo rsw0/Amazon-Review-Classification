@@ -28,11 +28,10 @@ X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
 
 
-
+X_train = X_train.replace([np.inf, -np.inf], np.nan)
+X_submission = X_submission.replace([np.inf, -np.inf], np.nan)
+print(X_train.isnull().values.any())
 print(X_submission.isnull().values.any())
-print(X_submission[X_submission.apply(lambda x: any(np.isinf(x)), axis=1)])
-
-
 
 
 

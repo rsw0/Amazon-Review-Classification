@@ -39,11 +39,13 @@ X_submission = X_submission.drop(columns=['ProductId', 'UserId', 'HelpfulnessNum
 testtext = "He ended up burning his fingers ve poking dc someone else's fire os."
 # testtext = "Nick likes to PLAYful played tried attempted delightful footBall, aren't @#% @ #^ &&%$*!!@#$ however   you're don't he's is not'$ t  os o FOND of ten'nis ab bc cd"
 
-
+print("pre-na handling shape")
+print(X_train.shape)
 # Handling NA
 print("Handling NA...")
-X_train.dropna()
-
+X_train.dropna(inplace=True)
+print(X_train.shape)
+print("post-na handling shape")
 
 # Converting objects to strings
 print("Converting to strings...")
@@ -126,13 +128,10 @@ X_submission = X_submission.join(X_submission_df)
 
 
 
-
-
-print(X_train[X_train.apply(lambda x: any(np.isinf(x)), axis=1)])
-print(X_submission[X_submission.apply(lambda x: any(np.isinf(x)), axis=1)])
-
-
-
+X_train = X_train.replace([np.inf, -np.inf], np.nan)
+X_submission = X_submission.replace([np.inf, -np.inf], np.nan)
+print(X_train.isnull().values.any())
+print(X_submission.isnull().values.any())
 
 
 

@@ -105,7 +105,7 @@ X_train_vect = vectorizer.transform(X_train['Text'])
 X_submission_vect = vectorizer.transform(X_submission['Text'])
 print("Vectorization - SVD...")
 svd_s_time = time.perf_counter()
-svd = TruncatedSVD(n_components=3000, random_state=0)
+svd = TruncatedSVD(n_components=2000, random_state=0)
 X_train_vect = svd.fit_transform(X_train_vect)
 print(svd.explained_variance_ratio_.sum())
 X_submission_vect = svd.fit_transform(X_submission_vect)
@@ -128,8 +128,8 @@ X_submission = X_submission.join(X_submission_df)
 
 
 
-print(X_train.columns.to_series()[np.isinf(df).any()])
-print(X_submission.columns.to_series()[np.isinf(df).any()])
+print(X_train.columns.to_series()[np.isinf(X_train).any()])
+print(X_submission.columns.to_series()[np.isinf(X_submission).any()])
 
 
 

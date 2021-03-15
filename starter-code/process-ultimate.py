@@ -109,21 +109,15 @@ X_submission_vect_s = vectorizer_s.transform(X_submission['Summary'])
 
 
 
-print(len(X_train_vect))
-print(len(X_train_vect)[0])
-print(len(X_train_vect_s))
-print(len(X_train_vect_s)[0])
+print(X_train_vect.shape)
+print(X_train_vect_s.shape)
 X_train_vect = hstack((X_train_vect, X_train_vect_s))
-print(len(X_train_vect))
-print(len(X_train_vect_s)[0])
+print(X_train_vect.shape)
 
-print(len(X_submission_vect))
-print(len(X_submission_vect)[0])
-print(len(X_submission_vect_s))
-print(len(X_submission_vect_s)[0])
+print(X_submission_vect.shape)
+print(X_submission_vect_s.shape)
 X_submission_vect = hstack((X_submission_vect, X_submission_vect_s))
-print(len(X_submission_vect))
-print(len(X_submission_vect_s)[0])
+print(X_submission_vect.shape)
 
 # collapse the vectors before you do svd on them
 # increase your svd sample size to account for both features, know that you will have longer runtimes, change the column array as well 

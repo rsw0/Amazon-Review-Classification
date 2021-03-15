@@ -39,6 +39,11 @@ X_submission = X_submission.drop(columns=['ProductId', 'UserId', 'HelpfulnessNum
 testtext = "He ended up burning his fingers ve poking dc someone else's fire os."
 # testtext = "Nick likes to PLAYful played tried attempted delightful footBall, aren't @#% @ #^ &&%$*!!@#$ however   you're don't he's is not'$ t  os o FOND of ten'nis ab bc cd"
 
+# Handling NA
+print("Handling NA...")
+X_train.dropna()
+X_submission.replace(np.nan, "")
+
 
 # Converting objects to strings
 print("Converting to strings...")
@@ -46,12 +51,6 @@ X_train['Summary'] = X_train['Summary'].apply(str)
 X_train['Text'] = X_train['Text'].apply(str)
 X_submission['Summary'] = X_submission['Summary'].apply(str)
 X_submission['Text'] = X_submission['Text'].apply(str)
-
-
-# Drop NA
-print("Dropping NA...")
-X_train.dropna()
-# to get the number of Null: X_train.isna().sum()
 
 
 # Lowercase

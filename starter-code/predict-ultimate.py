@@ -24,17 +24,6 @@ X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
 
-# checking nulls
-print("nan checking")
-print(X_train.isnull().values.any())
-print(X_validation.isnull().values.any())
-print(X_submission.isnull().values.any())
-
-# checking inf
-print("inf checking")
-print(X_train.isinf().values.any())
-print(X_validation.isinf().values.any())
-print(X_submission.isinf().values.any())
 
 # Learn the model
 model = KNeighborsClassifier(n_neighbors=10).fit(X_train, Y_train)

@@ -25,6 +25,7 @@ print(list(X_validation)[:10])
 ####### should you remove the text associated with them????
 X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
+X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
 print(X_train.shape)
 print(list(X_train)[:10])

@@ -78,14 +78,13 @@ lemmatizer = WordNetLemmatizer()
 tag_dict = {"J": wordnet.ADJ, "N": wordnet.NOUN, "V": wordnet.VERB, "R": wordnet.ADV}
 def fast_lemma(sentence):
     return (" ".join([lemmatizer.lemmatize(key[0], tag_dict.get(key[1][0], wordnet.NOUN)) for key in nltk.pos_tag(word_tokenize(sentence))]))
-# t1_start = time.perf_counter()
+tk_start = time.perf_counter()
 X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
 X_train['Text'] = X_train['Text'].apply(fast_lemma)
 X_submission['Summary'] = X_submission['Summary'].apply(fast_lemma)
 X_submission['Text'] = X_submission['Text'].apply(fast_lemma)
-#t1_stop = time.perf_counter()
-#print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
-#print(X_train.head()[['Summary','Text']])
+tk_stop = time.perf_counter()
+print("Tokenization and Lemmatization took :" + str(tk_stop-tk_start) + ' seconds')
 
 
 # Stopword & Noise Removal (Token with length below 2)
@@ -97,7 +96,6 @@ X_train['Summary'] = X_train['Summary'].apply(fast_stop)
 X_train['Text'] = X_train['Text'].apply(fast_stop)
 X_submission['Summary'] = X_submission['Summary'].apply(fast_stop)
 X_submission['Text'] = X_submission['Text'].apply(fast_stop)
-# print(X_train.head()[['Summary','Text']])
 
 
 # Vectorizer
@@ -107,14 +105,14 @@ print("Vectorization - Transforming...")
 X_train_vect = vectorizer.transform(X_train['Text'])
 X_submission_vect = vectorizer.transform(X_submission['Text'])
 print("Vectorization - SVD...")
-tfidf_s_time = time.perf_counter()
+svd_s_time = time.perf_counter()
 svd = TruncatedSVD(n_components=3000, random_state=0)
 X_train_vect = svd.fit_transform(X_train_vect)
 print(svd.explained_variance_ratio_.sum())
 X_submission_vect = svd.fit_transform(X_submission_vect)
 print(svd.explained_variance_ratio_.sum())
-tfidf_f_time = time.perf_counter()
-print('svd took: ' + str(tfidf_f_time - tfidf_s_time) + ' seconds')
+svd_f_time = time.perf_counter()
+print('SVD took: ' + str(svd_f_time - svd_s_time) + ' seconds')
 print("Vectorization - Creating Pandas df...")
 X_train_df = pd.DataFrame(X_train_vect, columns=np.arange(3000)).set_index(X_train.index.values)
 X_submission_df = pd.DataFrame(X_submission_vect, columns=np.arange(3000)).set_index(X_submission.index.values)
@@ -125,16 +123,10 @@ print("Vectorization - Joining with Original df...")
 X_train = X_train.join(X_train_df)
 X_submission = X_submission.join(X_submission_df)
 
-print(X_train.shape)
-print(X_train.head())
-print(list(X_train))
-print(X_submission.shape)
-print(X_submission.head())
-print(list(X_submission))
 
 # Stratified Train/Validation Split
 print("Train/Validation Split...")
-X_train, X_test, Y_train, Y_test = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.30, random_state=0, stratify=X_train['Score'])
+X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.30, random_state=0, stratify=X_train['Score'])
 
 
 # Oversampling & Undersampling
@@ -142,6 +134,35 @@ X_train, X_test, Y_train, Y_test = train_test_split(X_train.drop(['Score'], axis
 '''only do this to the training set'''
 print("Resampling...")
 
+
+# stop here, save your preprocess to a pickle file
+# few parameters you can tune
+#   max_df
+#   max_features
+#   svd number of components
+#   use SVD or not?
+#   train/validation split ratio
+
+
+# next steps:
+# add summary into the equation as well. two vectors tfidf. How? fit two models and linearly weight their outputs? search combine two tfidf together (e.g., title and text) online
+# add non-word features
+# tune the parameters max_df min_df max_features, especially, adjust max_df to filter out certain words that appears too often but are not predictive
+# over and under sampling
+# dont do it in the blind
+# regularization technique on random forest?
+# you can use a grid method for parameter tuning (try multiple parameters)
+# try other models (boosting methods, SVM (use PCA if you do so), logistic)
+# aggregate several models, how? linear regression of the output weightings? can each method give probabilistic weightings? search online on how to
+# combine boosting and bagging methods. Don't do it in the blind
+# word embedding
+# oversampling with synonyms then undersampling (generate how much?) What's a good amount to undersample to?
+# kfold cross validation (You can to properly construct CV predictions for each train fold and then build a 2nd level model using the 1st level models predictions as input features. )
+# Other text parameters
+#   word count/length of review (do all of these this prior to tokenizing and removals)
+#   punctuations count (more = more extreme?)
+#   punctions such as !!! and ??? indicating emotions (Excitement vs confusion?)
+#   textmojis such as :)
 
 
 '''
@@ -172,29 +193,6 @@ plt.show()
 submission = X_submission[['Id', 'Score']]
 submission.to_csv("./data/submission.csv", index=False)
 '''
-
-
-# next steps:
-# add summary into the equation as well. two vectors tfidf. How? fit two models and linearly weight their outputs? search combine two tfidf together (e.g., title and text) online
-# add non-word features
-# tune the parameters max_df min_df max_features, especially, adjust max_df to filter out certain words that appears too often but are not predictive
-# over and under sampling
-# dont do it in the blind
-# try other models (boosting methods, SVM (use PCA if you do so), logistic)
-# aggregate several models, how? linear regression of the output weightings? can each method give probabilistic weightings? search online on how to
-# combine boosting and bagging methods. Don't do it in the blind
-# word embedding
-# oversampling with synonyms then undersampling (generate how much?) What's a good amount to undersample to?
-# kfold cross validation (You can to properly construct CV predictions for each train fold and then build a 2nd level model using the 1st level models predictions as input features. )
-# Other text parameters
-#   word count/length of review (do all of these this prior to tokenizing and removals)
-#   punctuations count (more = more extreme?)
-#   punctions such as !!! and ??? indicating emotions (Excitement vs confusion?)
-#   textmojis such as :)
-
-
-
-
 
 
 

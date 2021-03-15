@@ -26,7 +26,7 @@ X_submission = pd.read_csv("./data/small_submission.csv")
 
 
 # A test text to test individual steps
-testtext = "He ended up burning his fingers poking someone else's fire."
+testtext = "He ended up burning his fingers ve poking dc someone else's fire os."
 # testtext = "Nick likes to PLAYful played tried attempted delightful footBall, aren't @#% @ #^ &&%$*!!@#$ however   you're don't he's is not'$ t  os o FOND of ten'nis ab bc cd"
 
 
@@ -58,29 +58,29 @@ testtext = fast_rem(testtext)
 print(testtext)
 
 
-# Tokenization, Lemmatization & Removing Noise (Tokens below Length 2)
+# Tokenization, Lemmatization
 lemmatizer = WordNetLemmatizer()
 tag_dict = {"J": wordnet.ADJ, "N": wordnet.NOUN, "V": wordnet.VERB, "R": wordnet.ADV}
 def fast_lemma(sentence):
-    return (" ".join([lemmatizer.lemmatize(key[0], tag_dict.get(key[1][0], wordnet.NOUN)) if len(key) > 2 else continue for key in nltk.pos_tag(word_tokenize(sentence))]))
+    return (" ".join([lemmatizer.lemmatize(key[0], tag_dict.get(key[1][0], wordnet.NOUN)) for key in nltk.pos_tag(word_tokenize(sentence))]))
 t1_start = time.perf_counter()
 X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
 X_train['Text'] = X_train['Text'].apply(fast_lemma)
 t1_stop = time.perf_counter()
 print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
+print(X_train.head()[['Summary','Text']])
 testtext = fast_lemma(testtext)
 print(testtext)
 
 
-# Stopword
+# Stopword & Noise Removal (Token with length below 2)
 cachedStopWords = stopwords.words("english")
 def fast_stop(my_string):
-    return(' '.join([word for word in my_string.split() if word not in cachedStopWords]))
+    return(' '.join([word for word in my_string.split() if word not in cachedStopWords and len(word) > 2]))
 X_train['Summary'] = X_train['Summary'].apply(fast_stop)
 X_train['Text'] = X_train['Text'].apply(fast_stop)
 testtext = fast_stop(testtext)
 print(testtext)
-print(X_train.head()[['Summary','Text']])
 
 
 
@@ -166,16 +166,35 @@ submission.to_csv("./data/submission.csv", index=False)
 
 
 
+'''
+# old WordNet lemmatizer, used listed comprehension instead, performance similar
+def lemmatize_sentence(sentence):
+    nltk_tagged = nltk.pos_tag(word_tokenize(sentence))  
+    wordnet_tagged = map(lambda x: (x[0], tag_dict.get(x[1][0])), nltk_tagged)
+    lemmatized_sentence = []
+    for word, tag in wordnet_tagged:
+        if len(word) <= 2:
+            continue
+        if tag is None:
+            #if there is no available tag, append the token as is
+            lemmatized_sentence.append(word)
+        else:        
+            #else use the tag to lemmatize the token
+            lemmatized_sentence.append(lemmatizer.lemmatize(word, tag))
+    return " ".join(lemmatized_sentence)
+'''
 
-# # spaCy Tokenization and Lemmatization with noise removal below length 2. Too slow
-# nlp = spacy.load('en_core_web_sm', disable=["parser", "ner"]) 
-# def fast_lemma(my_string):
-#     spacy_form = nlp(my_string)
-#     return(" ".join([word.lemma_ for word in spacy_form if len(word) > 2]))
-# testtext = fast_lemma(testtext)
-# print(testtext)
-# t1_start = time.perf_counter()
-# X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
-# X_train['Text'] = X_train['Text'].apply(fast_lemma)
-# t1_stop = time.perf_counter()
-# print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
+'''
+# spaCy Tokenization and Lemmatization with noise removal below length 2. Too slow
+nlp = spacy.load('en_core_web_sm', disable=["parser", "ner"]) 
+def fast_lemma(my_string):
+    spacy_form = nlp(my_string)
+    return(" ".join([word.lemma_ for word in spacy_form if len(word) > 2]))
+testtext = fast_lemma(testtext)
+print(testtext)
+t1_start = time.perf_counter()
+X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
+X_train['Text'] = X_train['Text'].apply(fast_lemma)
+t1_stop = time.perf_counter()
+print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
+'''

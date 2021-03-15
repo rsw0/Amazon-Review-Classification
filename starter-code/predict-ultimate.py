@@ -56,20 +56,17 @@ submission.to_csv("./data/submission.csv", index=False)
 
 
 # next steps:
-# add summary into the equation as well. two vectors tfidf. How? fit two models and linearly weight their outputs? search combine two tfidf together (e.g., title and text) online
-# add non-word features
-# tune the parameters max_df min_df max_features, especially, adjust max_df to filter out certain words that appears too often but are not predictive
-# over and under sampling in the process file
-# dont do it in the blind
-# regularization technique on random forest?
-# you can use a grid method for parameter tuning (try multiple parameters)
+# go back to process, add undersampling and compare results, should you even undersample?
+# tune parameters in the process file to see the output
+# regularization techniques
 # try other models (boosting methods, SVM (use PCA if you do so), logistic)
 # aggregate several models, how? linear regression of the output weightings? can each method give probabilistic weightings? search online on how to
 # combine boosting and bagging methods. Don't do it in the blind
-# automatically give reviews with no text 5 star?
-# word embedding
-# oversampling with synonyms then undersampling (generate how much?) What's a good amount to undersample to?
 # kfold cross validation (You can to properly construct CV predictions for each train fold and then build a 2nd level model using the 1st level models predictions as input features. )
+# word count
+# oversampling with synonyms then undersampling (generate how much?) What's a good amount to undersample to?
+# You can use a grid method for parameter tuning (try multiple parameters)
+# word embedding
 # Other text parameters
 #   word count/length of review (do all of these this prior to tokenizing and removals)
 #   punctuations count (more = more extreme?)

@@ -16,16 +16,19 @@ X_validation = pd.read_pickle("./data/X_validation.pkl")
 Y_train = pd.read_pickle("./data/Y_train.pkl")
 Y_validation = pd.read_pickle("./data/Y_validation.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
-print(X_train.shape)
-print(list(X_train)[:10])
-print(X_validation.shape)
-print(list(X_validation)[:10])
 
 
 ####### should you remove the text associated with them????
 X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
+
+
+# checking nulls
+print(X_train.isnull().sum())
+print(X_validation.isnull().sum())
+print(X_submission.isnull().sum())
+
 
 print(X_train.shape)
 print(list(X_train)[:10])
@@ -72,6 +75,7 @@ submission.to_csv("./data/submission.csv", index=False)
 # try other models (boosting methods, SVM (use PCA if you do so), logistic)
 # aggregate several models, how? linear regression of the output weightings? can each method give probabilistic weightings? search online on how to
 # combine boosting and bagging methods. Don't do it in the blind
+# automatically give reviews with no text 5 star?
 # word embedding
 # oversampling with synonyms then undersampling (generate how much?) What's a good amount to undersample to?
 # kfold cross validation (You can to properly construct CV predictions for each train fold and then build a 2nd level model using the 1st level models predictions as input features. )

@@ -21,10 +21,10 @@ X_submission = pd.read_pickle("./data/X_submission.pkl")
 
 
 # Learn the model
-model = KNeighborsClassifier(n_neighbors=10).fit(X_train_processed, Y_train)
+model = KNeighborsClassifier(n_neighbors=10).fit(X_train, Y_train)
 
 # Predict the score using the model
-Y_validation_predictions = model.predict(X_validation_processed)
+Y_validation_predictions = model.predict(X_validation)
 X_submission['Score'] = model.predict(X_submission)
 
 # Evaluate your model on the validation set

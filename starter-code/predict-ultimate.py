@@ -88,27 +88,36 @@ X_train['Text'] = X_train['Text'].apply(fast_stop)
 # print(X_train.head()[['Summary','Text']])
 
 print("vectorizer...")
-vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), max_features = 40000).fit(X_train['Text'])
+
+
+# you want to select features with tfidf score that varies the most among documents (e.g., one document has 0.99 tf-idf, and the other have very small)
+
+
+vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.75, max_features = 20).fit(X_train['Text'])
 print("transformer...")
 X_train_vect = vectorizer.transform(X_train['Text'])
-print("to df")
+print("to df...")
 X_train_df = pd.DataFrame(X_train_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_train.index.values)
-print("joining dfs")
+print("joining dfs...")
 X_train_with_tfidf = X_train.join(X_train_df)
 print(X_train_with_tfidf.shape)
 print(X_train_with_tfidf.head())
+print(list(X_train_with_tfidf))
+
+
+# Undersampling + Oversampling
+print("Undersampling...")
 
 
 # Stratified Train/Validation Split
 print("Train/Validation Split...")
 X_train, X_test, Y_train, Y_test = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
 
-'''
-# Undersampling
-print("Undersampling...")
+
 
 
 # now apply that same set of features to X_submission
+# not just the vectorizer itself. Apply all of your prior transformations
 X_submission_vect = vectorizer.transform(X_submission['Text'])
 X_submission_df = pd.DataFrame(X_submission_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_submission.index.values)
 X_submission_with_tfidf = X_submission.join(X_submission_df)
@@ -129,13 +138,9 @@ print(features.shape)
 print('tfidf vectorizer took: ' + str(tfidf_f_time - tfidf_s_time) + ' seconds')
 print(features)
 
-# play around with max diff and min diff?
 
-# how are bigrams handled
-# should you use a max_features to limit it?
+# tune the parameters max_df min_df max_features, especially, adjust max_df to filter out certain words that appears too often but are not predictive
 
-# think about increasing the max_features to see where it take you?
-'''
 
 
 
@@ -171,10 +176,12 @@ submission.to_csv("./data/submission.csv", index=False)
 
 # next steps:
 # add summary into the equation as well. two vectors tfidf. How? fit two models and linearly weight their outputs? search combine two tfidf together (e.g., title and text) online
+# add non-word features
 # dont do it in the blind
 # try other models (boosting methods, SVM (use PCA if you do so), logistic)
 # aggregate several models, how? linear regression of the output weightings? can each method give probabilistic weightings? search online on how to
 # combine boosting and bagging methods. Don't do it in the blind
+# word embedding
 # oversampling with synonyms then undersampling (generate how much?) What's a good amount to undersample to?
 # kfold cross validation (You can to properly construct CV predictions for each train fold and then build a 2nd level model using the 1st level models predictions as input features. )
 # Other text parameters
@@ -184,8 +191,17 @@ submission.to_csv("./data/submission.csv", index=False)
 #   textmojis such as :)
 
 
+
+
+
+
+
+
+
+
+
 '''
-# old WordNet lemmatizer, used listed comprehension instead, performance similar
+# old WordNet lemmatizer, used list comprehension instead, performance similar
 def lemmatize_sentence(sentence):
     nltk_tagged = nltk.pos_tag(word_tokenize(sentence))  
     wordnet_tagged = map(lambda x: (x[0], tag_dict.get(x[1][0])), nltk_tagged)

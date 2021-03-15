@@ -60,22 +60,12 @@ print(testtext)
 
 # Tokenization, Lemmatization & Removing Noise (Tokens below Length 2)
 lemmatizer = WordNetLemmatizer()
-def nltk_tag_to_wordnet_tag(nltk_tag):
-    if nltk_tag.startswith('J'):
-        return wordnet.ADJ
-    elif nltk_tag.startswith('V'):
-        return wordnet.VERB
-    elif nltk_tag.startswith('N'):
-        return wordnet.NOUN
-    elif nltk_tag.startswith('R'):
-        return wordnet.ADV
-    else:          
-        return None
+tag_dict = {"J": wordnet.ADJ, "N": wordnet.NOUN, "V": wordnet.VERB, "R": wordnet.ADV}
 def lemmatize_sentence(sentence):
     #tokenize the sentence and find the POS tag for each token
     nltk_tagged = nltk.pos_tag(word_tokenize(sentence))  
     #tuple of (token, wordnet_tag)
-    wordnet_tagged = map(lambda x: (x[0], nltk_tag_to_wordnet_tag(x[1])), nltk_tagged)
+    wordnet_tagged = map(lambda x: (x[0], tag_dict.get(x[1][0])), nltk_tagged)
     lemmatized_sentence = []
     for word, tag in wordnet_tagged:
         if len(word) <= 2:
@@ -107,11 +97,6 @@ print(testtext)
 
 
 
-
-
-# does spacy takes in the full sentence when assigning tokens? Does it interpret? will I get things wrong if I do it in the current way?
-
-
 # non-word parameters:
 # word count
 # character count
@@ -130,7 +115,7 @@ print(testtext)
 
 # save the proprocessed data in to a panda file to be imported later in the prediction file. Use two separate files to avoid accumulating runtime
 
-# do feature extraction on submission file after you're finished with the training set, know how you predicted training data
+
 
 
 
@@ -147,6 +132,9 @@ tfidf_f_time = time.perf_counter()
 print('tfidf vectorizer took: ' + str(tfidf_f_time - tfidf_s_time) + ' seconds')
 print(features)
 '''
+
+
+
 # do this after you've done the processing
 # Train/Test split
 X_train, X_test, Y_train, Y_test = train_test_split(

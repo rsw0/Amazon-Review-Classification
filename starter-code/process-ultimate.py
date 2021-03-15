@@ -32,17 +32,18 @@ X_submission = pd.read_csv("./data/small_submission.csv")
 # Subsetting Columns
 print("Dropping unnecessary columns...")
 X_train = X_train.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time'])
-X_submission = X_submission.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time'])
+X_submission = X_submission.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time', 'Score'])
 
 
 # A test text can be used to test individual steps
 testtext = "He ended up burning his fingers ve poking dc someone else's fire os."
 # testtext = "Nick likes to PLAYful played tried attempted delightful footBall, aren't @#% @ #^ &&%$*!!@#$ however   you're don't he's is not'$ t  os o FOND of ten'nis ab bc cd"
 
+
 # Handling NA
 print("Handling NA...")
 X_train.dropna()
-X_submission.replace(np.nan, "")
+print(X_train.isnull().values.any())
 print(X_submission.isnull().values.any())
 
 # Converting objects to strings
@@ -51,7 +52,8 @@ X_train['Summary'] = X_train['Summary'].apply(str)
 X_train['Text'] = X_train['Text'].apply(str)
 X_submission['Summary'] = X_submission['Summary'].apply(str)
 X_submission['Text'] = X_submission['Text'].apply(str)
-
+print(X_train.isnull().values.any())
+print(X_submission.isnull().values.any())
 
 # Lowercase
 print("Converting to lowercase...")
@@ -59,7 +61,8 @@ X_train['Summary'] = X_train['Summary'].str.lower()
 X_train['Text'] = X_train['Text'].str.lower()
 X_submission['Summary'] = X_submission['Summary'].str.lower()
 X_submission['Text'] = X_submission['Text'].str.lower()
-
+print(X_train.isnull().values.any())
+print(X_submission.isnull().values.any())
 
 # Punctuation, Special Character & Whitespace (adjusted for stopwords)
 print("Removing punctuations and special characters...")
@@ -69,7 +72,8 @@ X_train['Summary'] = X_train['Summary'].apply(fast_rem)
 X_train['Text'] = X_train['Text'].apply(fast_rem)
 X_submission['Summary'] = X_submission['Summary'].apply(fast_rem)
 X_submission['Text'] = X_submission['Text'].apply(fast_rem)
-
+print(X_train.isnull().values.any())
+print(X_submission.isnull().values.any())
 
 # Tokenization, Lemmatization
 print("Tokenization and Lemmatization...")
@@ -84,7 +88,8 @@ X_submission['Summary'] = X_submission['Summary'].apply(fast_lemma)
 X_submission['Text'] = X_submission['Text'].apply(fast_lemma)
 tk_stop = time.perf_counter()
 print("Tokenization and Lemmatization took :" + str(tk_stop-tk_start) + ' seconds')
-
+print(X_train.isnull().values.any())
+print(X_submission.isnull().values.any())
 
 # Stopword & Noise Removal (Token with length below 2)
 print("Removing Stopwords...")
@@ -95,7 +100,8 @@ X_train['Summary'] = X_train['Summary'].apply(fast_stop)
 X_train['Text'] = X_train['Text'].apply(fast_stop)
 X_submission['Summary'] = X_submission['Summary'].apply(fast_stop)
 X_submission['Text'] = X_submission['Text'].apply(fast_stop)
-
+print(X_train.isnull().values.any())
+print(X_submission.isnull().values.any())
 
 # Vectorizer
 print("Vectorization - Fitting...")
@@ -122,6 +128,8 @@ print("Vectorization - Joining with Original df...")
 X_train = X_train.join(X_train_df)
 X_submission = X_submission.join(X_submission_df)
 
+
+print("here comes the big test")
 print(X_submission.isnull())
 print(X_submission.isnull().values.any())
 tempdf = pd.DataFrame(X_submission.isnull().sum(), columns=['sum']).sort_values(by=['sum'])

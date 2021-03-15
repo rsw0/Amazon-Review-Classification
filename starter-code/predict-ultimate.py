@@ -61,10 +61,9 @@ print(testtext)
 # Tokenization, Lemmatization & Removing Noise (Tokens below Length 2)
 lemmatizer = WordNetLemmatizer()
 tag_dict = {"J": wordnet.ADJ, "N": wordnet.NOUN, "V": wordnet.VERB, "R": wordnet.ADV}
+'''
 def lemmatize_sentence(sentence):
-    #tokenize the sentence and find the POS tag for each token
     nltk_tagged = nltk.pos_tag(word_tokenize(sentence))  
-    #tuple of (token, wordnet_tag)
     wordnet_tagged = map(lambda x: (x[0], tag_dict.get(x[1][0])), nltk_tagged)
     lemmatized_sentence = []
     for word, tag in wordnet_tagged:
@@ -77,12 +76,16 @@ def lemmatize_sentence(sentence):
             #else use the tag to lemmatize the token
             lemmatized_sentence.append(lemmatizer.lemmatize(word, tag))
     return " ".join(lemmatized_sentence)
+'''
+def fast_lemma(sentence):
+    return (" ".join([lemmatizer.lemmatize(key[0], tag_dict.get(key[1][0], wordnet.NOUN)) for key in nltk.pos_tag(word_tokenize(sentence))]))
+
 t1_start = time.perf_counter()
-X_train['Summary'] = X_train['Summary'].apply(lemmatize_sentence)
-X_train['Text'] = X_train['Text'].apply(lemmatize_sentence)
+X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
+X_train['Text'] = X_train['Text'].apply(fast_lemma)
 t1_stop = time.perf_counter()
 print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
-testtext = lemmatize_sentence(testtext)
+testtext = fast_lemma(testtext)
 print(testtext)
 
 

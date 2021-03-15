@@ -80,6 +80,7 @@ X_train['Summary'] = X_train['Summary'].apply(fast_stop)
 X_train['Text'] = X_train['Text'].apply(fast_stop)
 testtext = fast_stop(testtext)
 print(testtext)
+print(X_train.head()[['Summary','Text']])
 
 
 

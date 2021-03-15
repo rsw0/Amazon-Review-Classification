@@ -20,6 +20,10 @@ Y_validation = pd.read_pickle("./data/Y_validation.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
 
 
+####### should you remove the text associated with them????
+X_train = X_train.drop(columns=['Summary', 'Text'])
+Y_train = Y_train.drop(columns=['Summary', 'Text'])
+
 # Learn the model
 model = KNeighborsClassifier(n_neighbors=10).fit(X_train, Y_train)
 

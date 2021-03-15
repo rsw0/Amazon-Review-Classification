@@ -61,25 +61,8 @@ print(testtext)
 # Tokenization, Lemmatization & Removing Noise (Tokens below Length 2)
 lemmatizer = WordNetLemmatizer()
 tag_dict = {"J": wordnet.ADJ, "N": wordnet.NOUN, "V": wordnet.VERB, "R": wordnet.ADV}
-'''
-def lemmatize_sentence(sentence):
-    nltk_tagged = nltk.pos_tag(word_tokenize(sentence))  
-    wordnet_tagged = map(lambda x: (x[0], tag_dict.get(x[1][0])), nltk_tagged)
-    lemmatized_sentence = []
-    for word, tag in wordnet_tagged:
-        if len(word) <= 2:
-            continue
-        if tag is None:
-            #if there is no available tag, append the token as is
-            lemmatized_sentence.append(word)
-        else:        
-            #else use the tag to lemmatize the token
-            lemmatized_sentence.append(lemmatizer.lemmatize(word, tag))
-    return " ".join(lemmatized_sentence)
-'''
 def fast_lemma(sentence):
-    return (" ".join([lemmatizer.lemmatize(key[0], tag_dict.get(key[1][0], wordnet.NOUN)) for key in nltk.pos_tag(word_tokenize(sentence))]))
-
+    return (" ".join([lemmatizer.lemmatize(key[0], tag_dict.get(key[1][0], wordnet.NOUN)) if len(key) > 2 else continue for key in nltk.pos_tag(word_tokenize(sentence))]))
 t1_start = time.perf_counter()
 X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
 X_train['Text'] = X_train['Text'].apply(fast_lemma)

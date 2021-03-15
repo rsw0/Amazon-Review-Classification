@@ -43,7 +43,7 @@ testtext = "He ended up burning his fingers ve poking dc someone else's fire os.
 print("Handling NA...")
 X_train.dropna()
 X_submission.replace(np.nan, "")
-
+print(X_submission.isnull().values.any())
 
 # Converting objects to strings
 print("Converting to strings...")
@@ -122,6 +122,10 @@ print("Vectorization - Joining with Original df...")
 X_train = X_train.join(X_train_df)
 X_submission = X_submission.join(X_submission_df)
 
+print(X_submission.isnull())
+print(X_submission.isnull().values.any())
+tempdf = pd.DataFrame(X_submission.isnull().sum(), columns=['sum']).sort_values(by=['sum'])
+print(tempdf.head())
 
 # Stratified Train/Validation Split
 print("Train/Validation Split...")

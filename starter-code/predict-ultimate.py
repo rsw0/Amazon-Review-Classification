@@ -5,11 +5,9 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
 
-# try grid search logistic regression with tfidf normalization first
-# Learn the model
-# check saved bookmarks on random forest
-# naive bayes multinomial NB, don't need to be vectorized?
-# xgboost with random forest
+# logistic
+# xgboost with random forest, or just random forest alone
+# how can you be nested?
 
 # Import Saved Pickles
 print("Importing Data...")
@@ -18,6 +16,10 @@ X_validation = pd.read_pickle("./data/X_validation.pkl")
 Y_train = pd.read_pickle("./data/Y_train.pkl")
 Y_validation = pd.read_pickle("./data/Y_validation.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
+print(X_train.shape)
+print(list(X_train))
+print(Y_train.shape)
+print(list(Y_train))
 
 
 ####### should you remove the text associated with them????

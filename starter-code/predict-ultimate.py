@@ -75,10 +75,16 @@ nlp = spacy.load('en_core_web_sm')
 def fast_lemma(my_string):
     spacy_form = nlp(my_string)
     return(" ".join([word.lemma_ for word in spacy_form if len(word) > 2]))
+
 testtext = fast_lemma(testtext)
 print(testtext)
+
+t1_start = time.perf_counter()
 X_train['Summary'] = X_train['Summary'].apply(fast_lemma)
 X_train['Text'] = X_train['Text'].apply(fast_lemma)
+t1_stop = time.perf_counter()
+print("Elapsed time during the whole program in seconds:", t1_stop-t1_start) 
+
 
 
 # does spacy takes in the full sentence when assigning tokens? Does it interpret? will I get things wrong if I do it in the current way?

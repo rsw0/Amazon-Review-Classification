@@ -30,18 +30,6 @@ X_train = pd.read_csv("./data/small_train.csv")
 X_submission = pd.read_csv("./data/small_submission.csv")
 
 
-
-
-
-# Train/Validation Split
-print("Train/Validation Split...")
-X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
-print(list(Y_validation.columns.values))
-print(list(Y_train.columns.values))
-
-
-
-
 # Subsetting Columns
 print("Dropping unnecessary columns...")
 X_train = X_train.drop(columns=['ProductId', 'UserId', 'HelpfulnessNumerator', 'HelpfulnessDenominator', 'Time'])
@@ -54,10 +42,14 @@ X_train.dropna(inplace=True)
 
 
 # Undersampling
+temp_y = X_train['Score']
+temp_x = X_train.drop(['Score'], axis=1)
+print(temp_y.shape)
+print(temp_x.shape)
 undersample = RandomUnderSampler(sampling_strategy=0.5)
-
-
-
+X_train, Y_under = undersample.fit_resample(temp_x, temp_y)
+X_train['Score'] = Y_under
+print(X_train.shape)
 
 
 # Converting objects to strings
@@ -144,6 +136,9 @@ X_train = X_train.join(X_train_df)
 X_submission = X_submission.join(X_submission_df)
 
 
+# Train/Validation Split
+print("Train/Validation Split...")
+X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
 
 
 # Saving to Local

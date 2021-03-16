@@ -18,16 +18,16 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-# # Loading
-# print("Loading data...")
-# X_train = pd.read_csv("./data/X_train.csv")
-# X_submission = pd.read_csv("./data/X_submission.csv")
-
-
-# Loading (small test set)
+# Loading
 print("Loading data...")
-X_train = pd.read_csv("./data/small_train.csv")
-X_submission = pd.read_csv("./data/small_submission.csv")
+X_train = pd.read_csv("./data/X_train.csv")
+X_submission = pd.read_csv("./data/X_submission.csv")
+
+
+# # Loading (small test set)
+# print("Loading data...")
+# X_train = pd.read_csv("./data/small_train.csv")
+# X_submission = pd.read_csv("./data/small_submission.csv")
 
 
 # Subsetting Columns
@@ -42,6 +42,7 @@ X_train.dropna(inplace=True)
 
 
 # Undersampling
+print("Undersampling...")
 temp_y = X_train['Score']
 temp_x = X_train.drop(['Score'], axis=1)
 print(temp_y.shape)

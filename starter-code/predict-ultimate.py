@@ -8,12 +8,15 @@ from sklearn.metrics import mean_squared_error, confusion_matrix
 import xgboost as xgb
 
 
+# change the name of the import file names below if you want to use it. In the download folder, it has name extension 1000
+
 # Import Saved Pickles
 print("Importing Data...")
 X_train = pd.read_pickle("./data/X_train.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
 
 
+# modify this to run faster
 # Stratified Train/Validation Split
 print("Train/Validation Split...")
 X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])

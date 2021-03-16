@@ -18,16 +18,16 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-# # Loading
-# print("Loading data...")
-# X_train = pd.read_csv("./data/X_train.csv")
-# X_submission = pd.read_csv("./data/X_submission.csv")
-
-
-# Loading (small test set)
+# Loading
 print("Loading data...")
-X_train = pd.read_csv("./data/small_train.csv")
-X_submission = pd.read_csv("./data/small_submission.csv")
+X_train = pd.read_csv("./data/X_train.csv")
+X_submission = pd.read_csv("./data/X_submission.csv")
+
+
+# # Loading (small test set)
+# print("Loading data...")
+# X_train = pd.read_csv("./data/small_train.csv")
+# X_submission = pd.read_csv("./data/small_submission.csv")
 
 
 # Subsetting Columns
@@ -79,7 +79,7 @@ X_train['Text'] = X_train['Text'].apply(fast_lemma)
 X_submission['Summary'] = X_submission['Summary'].apply(fast_lemma)
 X_submission['Text'] = X_submission['Text'].apply(fast_lemma)
 tk_stop = time.perf_counter()
-print("Tokenization and Lemmatization took :" + str(tk_stop-tk_start) + ' seconds')
+print("Tokenization and Lemmatization took: " + str(tk_stop-tk_start) + ' seconds')
 
 
 # Stopword & Noise Removal (Token with length below 2)
@@ -95,7 +95,7 @@ X_submission['Text'] = X_submission['Text'].apply(fast_stop)
 
 # Vectorizer
 print("Vectorization - Fitting...")
-vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.9, max_features = 10000).fit(X_train['Text'])
+vectorizer = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.9, max_features = 8000).fit(X_train['Text'])
 vectorizer_s = TfidfVectorizer(lowercase = False, ngram_range= (1,2), min_df = 5, max_df = 0.9, max_features = 2000).fit(X_train['Summary'])
 print("Vectorization - Transforming...")
 X_train_vect = vectorizer.transform(X_train['Text'])
@@ -107,7 +107,7 @@ X_train_vect = hstack((X_train_vect, X_train_vect_s))
 X_submission_vect = hstack((X_submission_vect, X_submission_vect_s))
 print("Vectorization - SVD...")
 svd_s_time = time.perf_counter()
-svd = TruncatedSVD(n_components=2300, random_state=0)
+svd = TruncatedSVD(n_components=1000, random_state=0)
 X_train_vect = svd.fit_transform(X_train_vect)
 print(svd.explained_variance_ratio_.sum())
 X_submission_vect = svd.fit_transform(X_submission_vect)
@@ -115,8 +115,8 @@ print(svd.explained_variance_ratio_.sum())
 svd_f_time = time.perf_counter()
 print('SVD took: ' + str(svd_f_time - svd_s_time) + ' seconds')
 print("Vectorization - Creating Pandas df...")
-X_train_df = pd.DataFrame(X_train_vect, columns=np.arange(2300)).set_index(X_train.index.values)
-X_submission_df = pd.DataFrame(X_submission_vect, columns=np.arange(2300)).set_index(X_submission.index.values)
+X_train_df = pd.DataFrame(X_train_vect, columns=np.arange(1000)).set_index(X_train.index.values)
+X_submission_df = pd.DataFrame(X_submission_vect, columns=np.arange(1000)).set_index(X_submission.index.values)
 # X_train_df = pd.DataFrame(X_train_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_train.index.values)
 # X_submission_df = pd.DataFrame(X_submission_vect.toarray(), columns=vectorizer.get_feature_names()).set_index(X_submission.index.values)
 print("Vectorization - Joining with Original df...")
@@ -127,30 +127,26 @@ X_submission = X_submission.join(X_submission_df)
 
 # Stratified Train/Validation Split
 print("Train/Validation Split...")
-X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.30, random_state=0, stratify=X_train['Score'])
+X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
 
 
 # Oversampling & Undersampling
 '''to be implemented'''
-'''only do this to the training set'''
+'''only do this to the post-splitted training set'''
 print("Resampling...")
 
 
 # Saving to Local
 print("Saving to Local...")
-X_train.to_pickle("./data/X_train.pkl")
-X_validation.to_pickle("./data/X_validation.pkl")
-Y_train.to_pickle("./data/Y_train.pkl")
-Y_validation.to_pickle("./data/Y_validation.pkl")
-X_submission.to_pickle("./data/X_submission.pkl")
+X_train.to_pickle("./data/X_train_1000.pkl")
+X_validation.to_pickle("./data/X_validation_1000.pkl")
+Y_train.to_pickle("./data/Y_train_1000.pkl")
+Y_validation.to_pickle("./data/Y_validation_1000.pkl")
+X_submission.to_pickle("./data/X_submission_1000.pkl")
 
 
-# Tuning Parameters
-#   max_df
-#   max_features
-#   svd number of components
-#   use SVD or not?
-#   train/validation split ratio
+
+
 
 
 

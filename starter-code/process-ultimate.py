@@ -46,7 +46,7 @@ temp_y = X_train['Score']
 temp_x = X_train.drop(['Score'], axis=1)
 print(temp_y.shape)
 print(temp_x.shape)
-undersample = RandomUnderSampler(sampling_strategy=0.5)
+undersample = RandomUnderSampler(sampling_strategy='majority')
 X_train, Y_under = undersample.fit_resample(temp_x, temp_y)
 X_train['Score'] = Y_under
 print(X_train.shape)

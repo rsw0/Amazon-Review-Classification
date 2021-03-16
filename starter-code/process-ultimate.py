@@ -36,8 +36,8 @@ X_submission = pd.read_csv("./data/small_submission.csv")
 # Train/Validation Split
 print("Train/Validation Split...")
 X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
-print(list(Y_validation))
-print(list(Y_train))
+print(list(Y_validation.columns.values))
+print(list(Y_train.columns.values))
 
 
 

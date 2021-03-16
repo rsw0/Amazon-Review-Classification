@@ -11,38 +11,80 @@ import xgboost as xgb
 # Import Saved Pickles
 print("Importing Data...")
 X_train = pd.read_pickle("./data/X_train.pkl")
-X_validation = pd.read_pickle("./data/X_validation.pkl")
-Y_train = pd.read_pickle("./data/Y_train.pkl")
-Y_validation = pd.read_pickle("./data/Y_validation.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
 
 
+# Stratified Train/Validation Split
+print("Train/Validation Split...")
+X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
+
+
 # Removing String Columns
+print("Dropping Unused Columns")
 X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
 
-# xgboost (tune it hard)
-# logistic with SGD classifier (need tuning to work)
-# random forest need data to be resampled
-# SGD based SVM (need tuning to work)
+# Converting to DMatrix for XGBoost
+print("Converting to DMatrix...")
+dtrain = xgb.DMatrix(X_train, label=Y_train)
+dvalidation = xgb.DMatrix(X_validation, label=Y_validation)
+dsubmission = xgb.DMatrix(X_submission)
 
+
+# Setting Parameters
+print("Setting XGBoost Parameters..."
+param = {'max_depth':2, 'eta':1, 'objective':'binary:logistic'}
+num_round = 999
+
+eval_set = [(X_train, Y_train), (X_validation, Y_validation)]
+
+# early stopping
+# regularization
+# Cross Validation
+
+
+
+
+# Train
+print("Training XGBoost...")
+bst = xgb.train(param, dtrain, num_round, evals = eval_set, early_stopping_round = 10)
+
+
+# Predict
+print("Predicting...")
+# can you do this here? if you use mean_squard_error, just don't even give dvalidation it's labels?
+Y_validation_predictions = bst.predict(dvalidation)
+X_submission['Score'] = bst.predict(dsubmission)
+print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
+
+
+# Plot a confusion matrix
+print("Creating Confusion Matrix...")
+cm = confusion_matrix(Y_validation, Y_validation_predictions, normalize='true')
+sns.heatmap(cm, annot=True)
+plt.title('Confusion matrix of the classifier')
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.savefig('matrix.png', dpi=300)
+
+
+# Create the submission file
+print('Creating Submission File')
+submission = X_submission[['Id', 'Score']]
+submission.to_csv("./data/submission.csv", index=False)
+
+
+
+
+'''
 # Learn the model
 model = KNeighborsClassifier(n_neighbors=10).fit(X_train, Y_train)
 
 # Predict the score using the model
 Y_validation_predictions = model.predict(X_validation)
-# does the ID column affect my predictions? search online
 X_submission['Score'] = model.predict(X_submission)
-
-
-
-
-
-
-
-
 
 # Evaluate your model on the validation set
 print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
@@ -58,21 +100,10 @@ plt.savefig('matrix.png', dpi=300)
 # Create the submission file
 submission = X_submission[['Id', 'Score']]
 submission.to_csv("./data/submission.csv", index=False)
-
-
-
-
-
-
-
+'''
 
 # next steps:
-# go back to process, add undersampling and compare results, should you even undersample?????????? think about it, even with boosting models
-# to svd or not to svd? Perhaps you should SVD
-# tune parameters in the process file to see the output
-# regularization techniques
-# try other models (boosting methods, SVM (use PCA if you do so), logistic)
-# aggregate several models, how? linear regression of the output weightings? can each method give probabilistic weightings? search online on how to
-# combine boosting and bagging methods. Don't do it in the blind
-# kfold cross validation (You can to properly construct CV predictions for each train fold and then build a 2nd level model using the 1st level models predictions as input features. )
-# word count/length of review
+# check confusion matrix to tune errors
+# don't forget to change the .pkl files at the beginning of predict-ultimate to actually run on the good data
+# is 1000 too many features?
+# SVD or not SVD

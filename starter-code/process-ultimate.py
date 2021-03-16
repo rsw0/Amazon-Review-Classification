@@ -124,25 +124,10 @@ X_train = X_train.join(X_train_df)
 X_submission = X_submission.join(X_submission_df)
 
 
-# Stratified Train/Validation Split
-print("Train/Validation Split...")
-X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
-
-
-# Oversampling & Undersampling
-'''to be implemented'''
-'''only do this to the post-splitted training set'''
-print("Resampling...")
-
-
 # Saving to Local
 print("Saving to Local...")
 X_train.to_pickle("./data/X_train_1000.pkl")
-X_validation.to_pickle("./data/X_validation_1000.pkl")
-Y_train.to_pickle("./data/Y_train_1000.pkl")
-Y_validation.to_pickle("./data/Y_validation_1000.pkl")
 X_submission.to_pickle("./data/X_submission_1000.pkl")
-
 
 
 

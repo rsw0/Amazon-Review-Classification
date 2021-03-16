@@ -13,13 +13,10 @@ import xgboost as xgb
 # Import Saved Pickles
 print("Importing Data...")
 X_train = pd.read_pickle("./data/X_train.pkl")
+X_validation = pd.read_pickle("./data/X_validation.pkl")
+Y_train = pd.read_pickle("./data/Y_train.pkl")
+Y_validation = pd.read_pickle("./data/Y_validation.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
-
-
-# modify this to run faster
-# Stratified Train/Validation Split
-print("Train/Validation Split...")
-X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
 
 
 # Removing String Columns

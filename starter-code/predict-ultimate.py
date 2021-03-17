@@ -21,8 +21,8 @@ X_submission = pd.read_pickle("./data/X_submission.pkl")
 
 # Change Type
 print("Changing label type to be categorical")
-Y_train= Y_train.astype('category')
-Y_validation = Y_train.astype('category')
+Y_train= Y_train.astype(int)
+Y_validation = Y_train.astype(int)
 
 
 # Removing String Columns

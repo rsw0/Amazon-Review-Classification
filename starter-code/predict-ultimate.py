@@ -5,9 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
-from imblearn.ensemble import EasyEnsembleClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 
 # Import Saved Pickles
 print("Importing Data...")
@@ -24,8 +22,13 @@ X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
-clf = RandomForestClassifier(n_estimators = 1000, n_jobs = -1, oob_score = True, class_weight='balanced', random_state=0, max_depth = 8, max_samples = 0.2, max_features = 3, min_samples_leaf = 50, min_samples_split = 200)
-# 
+#clf = RandomForestClassifier(n_estimators = 1000, n_jobs = -1, oob_score = True, class_weight='balanced', random_state=0, max_depth = 8, max_samples = 0.2, max_features = 3, min_samples_leaf = 50, min_samples_split = 200)
+
+
+
+clf = SGDClassifier(random_state=22)
+
+
 clf.fit(X_train, Y_train)
 
 Y_validation_predictions = clf.predict(X_validation)

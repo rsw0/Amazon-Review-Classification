@@ -44,11 +44,17 @@ X_train.dropna(inplace=True)
 
 # Undersampling
 print("Undersampling...")
-temp_y = X_train['Score']
-temp_x = X_train.drop(['Score'], axis=1)
-undersample = RandomUnderSampler(sampling_strategy='majority')
-X_train, Y_under = undersample.fit_resample(temp_x, temp_y)
-X_train['Score'] = Y_under
+X_train = X_train.sample(frac=1)
+
+one_star = X_train.loc[X_train['Score'] == 1.0]
+two_star = X_train.loc[X_train['Score'] == 2.0]
+three_star = X_train.loc[X_train['Score'] == 3.0]
+four_star = X_train.loc[X_train['Score'] == 4.0]
+five_star = X_train.loc[X_train['Score'] == 5.0]
+
+print(one_star.shape)
+print(three_star.shape)
+print(five_star.shape)
 
 print(X_train['Score'].value_counts())
 

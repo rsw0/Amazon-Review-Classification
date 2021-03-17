@@ -49,7 +49,7 @@ submission.to_csv("./data/submission.csv", index=False)
 
 
 # Learn the model
-model = KNeighborsClassifier(n_neighbors=100).fit(X_train, Y_train)
+model = KNeighborsClassifier(n_neighbors=300).fit(X_train, Y_train)
 
 # Predict the score using the model
 Y_validation_predictions = model.predict(X_validation)

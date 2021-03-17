@@ -45,17 +45,19 @@ X_train.dropna(inplace=True)
 # Undersampling
 print("Undersampling...")
 X_train = X_train.sample(frac=1)
-
 one_star = X_train.loc[X_train['Score'] == 1.0]
 two_star = X_train.loc[X_train['Score'] == 2.0]
 three_star = X_train.loc[X_train['Score'] == 3.0]
 four_star = X_train.loc[X_train['Score'] == 4.0]
 five_star = X_train.loc[X_train['Score'] == 5.0]
-
-print(one_star.shape)
-print(three_star.shape)
-print(five_star.shape)
-
+base = one_star.shape[0]
+rem_4 = four_star.shape[0] - 2*(one_star.shape[0])
+rem_5 = five_star.shape[0] - 2*(one_star.shape[0])
+drop_indices_4 = np.random.choice(four_star.index, rem_4, replace=False)
+four_star = four_star.drop(drop_indices_4)
+drop_indices_5 = np.random.choice(five_star.index, rem_5, replace=False)
+five_star = five_star.drop(drop_indices_5)
+X_train = one_star.append(two_star).append(three_star).append(four_star).append(five_star)
 print(X_train['Score'].value_counts())
 
 

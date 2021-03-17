@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
+from imblearn.ensemble import EasyEnsembleClassifier
 
 
 # Import Saved Pickles
@@ -22,7 +23,8 @@ X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
-clf = RandomForestClassifier(n_estimators = 1000, min_samples_leaf = 50, n_jobs = -1, oob_score = True, class_weight='balanced', random_state=0)
+#clf = RandomForestClassifier(n_estimators = 1000, min_samples_leaf = 50, n_jobs = -1, oob_score = True, class_weight='balanced', random_state=0)
+clf = EasyEnsembleClassifier(n_estimators = 1000, min_samples_leaf = 50, n_jobs = -1, oob_score = True, class_weight='balanced', random_state=0)
 clf.fit(X_train, Y_train)
 
 Y_validation_predictions = clf.predict(X_validation)

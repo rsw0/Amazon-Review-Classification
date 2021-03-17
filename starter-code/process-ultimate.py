@@ -50,6 +50,8 @@ undersample = RandomUnderSampler(sampling_strategy='majority')
 X_train, Y_under = undersample.fit_resample(temp_x, temp_y)
 X_train['Score'] = Y_under
 
+print(X_train['Score'].value_counts())
+
 
 # Converting objects to strings
 print("Converting to strings...")

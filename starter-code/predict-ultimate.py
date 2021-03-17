@@ -34,7 +34,7 @@ dsubmission = xgb.DMatrix(X_submission)
 
 
 # Setting Parameters
-print("Setting XGBoost Parameters..."
+print("Setting XGBoost Parameters...")
 param = {'max_depth':2, 'eta':1, 'objective':'binary:logistic'}
 num_round = 999
 
@@ -104,6 +104,3 @@ submission.to_csv("./data/submission.csv", index=False)
 
 # next steps:
 # check confusion matrix to tune errors
-# don't forget to change the .pkl files at the beginning of predict-ultimate to actually run on the good data
-# is 1000 too many features?
-# SVD or not SVD

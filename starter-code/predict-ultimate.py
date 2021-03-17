@@ -7,6 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
 from imblearn.ensemble import EasyEnsembleClassifier
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.neighbors import KNeighborsClassifier
 
 # Import Saved Pickles
 print("Importing Data...")

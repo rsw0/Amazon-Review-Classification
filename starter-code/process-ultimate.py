@@ -47,11 +47,18 @@ temp_y = X_train['Score']
 temp_x = X_train.drop(['Score'], axis=1)
 print(temp_y.shape)
 print(temp_x.shape)
+
+'''
 undersample = RandomUnderSampler(sampling_strategy='majority')
 X_train, Y_under = undersample.fit_resample(temp_x, temp_y)
 X_train['Score'] = Y_under
-print(X_train.shape)
+'''
 
+rus = RandomUnderSampler(random_state=0)
+rus.fit(temp_X, temp_y)
+X_train, y_resampled = rus.sample(temp_X, temp_y)
+X_train['Score'] = y_resampled
+print(X_train.shape)
 
 # Converting objects to strings
 print("Converting to strings...")

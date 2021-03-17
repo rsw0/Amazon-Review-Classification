@@ -24,38 +24,13 @@ X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
-'''
-clf = RandomForestClassifier(n_estimators = 1000, n_jobs = -1, oob_score = True, class_weight='balanced_subsample', random_state=0)
+clf = RandomForestClassifier(n_estimators = 1000, n_jobs = -1, oob_score = True, class_weight='balanced_subsample', random_state=0, max_samples = 0.2)
 # max_depth = 8, max_samples = 0.2, max_features = 3, min_samples_leaf = 50, min_samples_split = 200,
 clf.fit(X_train, Y_train)
 
 Y_validation_predictions = clf.predict(X_validation)
 X_submission['Score'] = clf.predict(X_submission)
 
-print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
-
-# Plot a confusion matrix
-cm = confusion_matrix(Y_validation, Y_validation_predictions, normalize='true')
-sns.heatmap(cm, annot=True)
-plt.title('Confusion matrix of the classifier')
-plt.xlabel('Predicted')
-plt.ylabel('True')
-plt.savefig('matrix.png', dpi=300)
-
-# Create the submission file
-submission = X_submission[['Id', 'Score']]
-submission.to_csv("./data/submission.csv", index=False)
-'''
-
-
-# Learn the model
-model = KNeighborsClassifier(n_neighbors=300).fit(X_train, Y_train)
-
-# Predict the score using the model
-Y_validation_predictions = model.predict(X_validation)
-X_submission['Score'] = model.predict(X_submission)
-
-# Evaluate your model on the validation set
 print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
 
 # Plot a confusion matrix

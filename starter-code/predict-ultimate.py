@@ -28,18 +28,12 @@ X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
 
 
-clf = SGDClassifier(random_state=22)
-parameters = [{ 'loss': ['hinge', 'log', 'perceptron'], 
-                'alpha': 10.0**-np.arange(1,7),
-                'penalty': ['l1', 'l2', 'elasticnet'],
-                }]
-clf_refined = GridSearchCV(SGDClassifier(random_state=22), parameters)
-clf_refined.fit(X_train, Y_train)
+clf = SGDClassifier(loss = 'log', n_jobs = -1, class_weight = "balanced", random_state=22)
 
-clf_SGD_refined.best_params_
+clf.fit(X_train, Y_train)
 
-Y_validation_predictions = clf_refined.predict(X_validation)
-X_submission['Score'] = clf_refined.predict(X_submission)
+Y_validation_predictions = clf.predict(X_validation)
+X_submission['Score'] = clf.predict(X_submission)
 
 print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
 

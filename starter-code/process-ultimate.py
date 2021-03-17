@@ -55,8 +55,8 @@ X_train['Score'] = Y_under
 '''
 
 rus = RandomUnderSampler(random_state=0)
-rus.fit(temp_X, temp_y)
-X_train, y_resampled = rus.sample(temp_X, temp_y)
+rus.fit(temp_x, temp_y)
+X_train, y_resampled = rus.sample(temp_x, temp_y)
 X_train['Score'] = y_resampled
 print(X_train.shape)
 

@@ -33,7 +33,7 @@ parameters = [{ 'loss': ['hinge', 'log', 'perceptron'],
                 'alpha': 10.0**-np.arange(1,7),
                 'penalty': ['l1', 'l2', 'elasticnet'],
                 }]
-n_iter_: [2,3,4,5]
+n_iter_ = [2,3,4,5]
 clf_refined = GridSearchCV(SGDClassifier(random_state=22), parameters, n_iter_)
 clf_refined.fit(X_train, Y_train)
 

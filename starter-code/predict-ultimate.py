@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
-from sklearn.linear_model import LogisticRegression, SGDClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.grid_search import GridSearchCV
+
 
 # Import Saved Pickles
 print("Importing Data...")
@@ -27,12 +29,17 @@ X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
 
 clf = SGDClassifier(random_state=22)
+parameters = [{ 'loss': ['hinge', 'log', 'perceptron'], 
+                'alpha': 10.0**-np.arange(1,7),
+                'penalty': ['l1', 'l2', 'elasticnet'],
+                'n_iter': [2,3,4,5] }]
+clf_refined = GridSearchCV(SGDClassifier(random_state=22), parameters)
+clf_refined.fit(X_train, Y_train)
 
+clf_SGD_refined.best_params_
 
-clf.fit(X_train, Y_train)
-
-Y_validation_predictions = clf.predict(X_validation)
-X_submission['Score'] = clf.predict(X_submission)
+Y_validation_predictions = clf_refined.predict(X_validation)
+X_submission['Score'] = clf_refined.predict(X_submission)
 
 print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
 

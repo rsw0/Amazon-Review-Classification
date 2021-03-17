@@ -23,6 +23,7 @@ X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
+'''
 clf = RandomForestClassifier(n_estimators = 1000, n_jobs = -1, oob_score = True, class_weight='balanced_subsample', random_state=0)
 # max_depth = 8, max_samples = 0.2, max_features = 3, min_samples_leaf = 50, min_samples_split = 200,
 clf.fit(X_train, Y_train)
@@ -43,10 +44,11 @@ plt.savefig('matrix.png', dpi=300)
 # Create the submission file
 submission = X_submission[['Id', 'Score']]
 submission.to_csv("./data/submission.csv", index=False)
-
 '''
+
+
 # Learn the model
-model = KNeighborsClassifier(n_neighbors=10).fit(X_train, Y_train)
+model = KNeighborsClassifier(n_neighbors=100).fit(X_train, Y_train)
 
 # Predict the score using the model
 Y_validation_predictions = model.predict(X_validation)
@@ -66,7 +68,7 @@ plt.savefig('matrix.png', dpi=300)
 # Create the submission file
 submission = X_submission[['Id', 'Score']]
 submission.to_csv("./data/submission.csv", index=False)
-'''
+
 
 # next steps:
 # check confusion matrix to tune errors

@@ -38,7 +38,7 @@ print("Setting XGBoost Parameters...")
 param = {'max_depth':2, 'eta':1, 'objective':'binary:logistic'}
 num_round = 999
 
-eval_set = [(X_train, Y_train), (X_validation, Y_validation)]
+eval_set = [(dvalidation, "Validation")]
 
 # early stopping
 # regularization

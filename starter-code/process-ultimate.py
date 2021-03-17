@@ -16,18 +16,19 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+import xgboost as xgb
 
 
-# Loading
-print("Loading data...")
-X_train = pd.read_csv("./data/X_train.csv")
-X_submission = pd.read_csv("./data/X_submission.csv")
-
-
-# # Loading (small test set)
+# # Loading
 # print("Loading data...")
-# X_train = pd.read_csv("./data/small_train.csv")
-# X_submission = pd.read_csv("./data/small_submission.csv")
+# X_train = pd.read_csv("./data/X_train.csv")
+# X_submission = pd.read_csv("./data/X_submission.csv")
+
+
+# Loading (small test set)
+print("Loading data...")
+X_train = pd.read_csv("./data/small_train.csv")
+X_submission = pd.read_csv("./data/small_submission.csv")
 
 
 # Subsetting Columns
@@ -47,18 +48,10 @@ temp_y = X_train['Score']
 temp_x = X_train.drop(['Score'], axis=1)
 print(temp_y.shape)
 print(temp_x.shape)
-
-'''
 undersample = RandomUnderSampler(sampling_strategy='majority')
 X_train, Y_under = undersample.fit_resample(temp_x, temp_y)
 X_train['Score'] = Y_under
-'''
 
-rus = RandomUnderSampler(random_state=0)
-rus.fit(temp_x, temp_y)
-X_train, y_resampled = rus.sample(temp_x, temp_y)
-X_train['Score'] = y_resampled
-print(X_train.shape)
 
 # Converting objects to strings
 print("Converting to strings...")
@@ -149,6 +142,13 @@ print("Train/Validation Split...")
 X_train, X_validation, Y_train, Y_validation = train_test_split(X_train.drop(['Score'], axis=1), X_train['Score'], test_size=0.20, random_state=0, stratify=X_train['Score'])
 
 
+
+
+
+
+
+
+
 # Saving to Local
 print("Saving to Local...")
 X_train.to_pickle("./data/X_train.pkl")
@@ -156,7 +156,6 @@ X_validation.to_pickle("./data/X_validation.pkl")
 Y_train.to_pickle("./data/Y_train.pkl")
 Y_validation.to_pickle("./data/Y_validation.pkl")
 X_submission.to_pickle("./data/X_submission.pkl")
-
 
 
 

@@ -24,6 +24,8 @@ print("Changing label type to be categorical")
 Y_train= Y_train.astype(int)
 Y_validation = Y_train.astype(int)
 
+print(Y_train.unique())
+print(Y_validation.unique())
 
 # Removing String Columns
 print("Dropping Unused Columns")

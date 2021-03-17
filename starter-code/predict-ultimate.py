@@ -49,7 +49,7 @@ eval_set = [(X_train, Y_train), (X_validation, Y_validation)]
 
 # Train
 print("Training XGBoost...")
-bst = xgb.train(param, dtrain, num_round, evals = eval_set, early_stopping_round = 10)
+bst = xgb.train(param, dtrain, num_round, evals = eval_set, early_stopping_rounds = 10)
 
 
 # Predict

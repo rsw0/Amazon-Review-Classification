@@ -2,13 +2,10 @@ import pandas as pd
 import seaborn as sns
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, confusion_matrix
-import xgboost as xgb
 
-
-# change the name of the import file names below if you want to use it. In the download folder, it has name extension 1000
 
 # Import Saved Pickles
 print("Importing Data...")
@@ -19,57 +16,21 @@ Y_validation = pd.read_pickle("./data/Y_validation.pkl")
 X_submission = pd.read_pickle("./data/X_submission.pkl")
 
 
-# Change Type
-print("Changing label type to be categorical")
-Y_train= Y_train.astype(int)
-Y_validation = Y_train.astype(int)
-
-print(Y_train.unique())
-print(Y_validation.unique())
-
 # Removing String Columns
 print("Dropping Unused Columns")
 X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
+clf = RandomForestClassifier(max_depth=2, random_state=0)
+clf.fit(X_train, Y_train)
 
-# Converting to DMatrix for XGBoost
-print("Converting to DMatrix...")
-dtrain = xgb.DMatrix(X_train, label=Y_train)
-dvalidation = xgb.DMatrix(X_validation, label=Y_validation)
-dsubmission = xgb.DMatrix(X_submission)
+Y_validation_predictions = clf.predict(X_validation)
+X_submission['Score'] = clf.predict(X_submission)
 
-
-# Setting Parameters
-print("Setting XGBoost Parameters...")
-param = {'max_depth':2, 'eta':1, 'objective':'multi:softmax', 'num_class':5}
-num_round = 999
-
-eval_set = [(dvalidation, "Validation")]
-
-# early stopping
-# regularization
-# Cross Validation
-
-
-
-
-# Train
-print("Training XGBoost...")
-bst = xgb.train(param, dtrain, num_round, evals = eval_set, early_stopping_rounds = 10)
-
-
-# Predict
-print("Predicting...")
-# can you do this here? if you use mean_squard_error, just don't even give dvalidation it's labels?
-Y_validation_predictions = bst.predict(dvalidation)
-X_submission['Score'] = bst.predict(dsubmission)
 print("RMSE on validation set = ", mean_squared_error(Y_validation, Y_validation_predictions))
 
-
 # Plot a confusion matrix
-print("Creating Confusion Matrix...")
 cm = confusion_matrix(Y_validation, Y_validation_predictions, normalize='true')
 sns.heatmap(cm, annot=True)
 plt.title('Confusion matrix of the classifier')
@@ -77,14 +38,9 @@ plt.xlabel('Predicted')
 plt.ylabel('True')
 plt.savefig('matrix.png', dpi=300)
 
-
 # Create the submission file
-print('Creating Submission File')
 submission = X_submission[['Id', 'Score']]
 submission.to_csv("./data/submission.csv", index=False)
-
-
-
 
 '''
 # Learn the model

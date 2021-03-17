@@ -23,16 +23,16 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV
 
 
-# # Loading
-# print("Loading data...")
-# X_train = pd.read_csv("./data/X_train.csv")
-# X_submission = pd.read_csv("./data/X_submission.csv")
-
-
-# Loading (small test set)
+# Loading
 print("Loading data...")
-X_train = pd.read_csv("./data/small_train.csv")
-X_submission = pd.read_csv("./data/small_submission.csv")
+X_train = pd.read_csv("./data/X_train.csv")
+X_submission = pd.read_csv("./data/X_submission.csv")
+
+
+# # Loading (small test set)
+# print("Loading data...")
+# X_train = pd.read_csv("./data/small_train.csv")
+# X_submission = pd.read_csv("./data/small_submission.csv")
 
 
 # Subsetting Columns

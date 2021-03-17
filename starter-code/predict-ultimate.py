@@ -35,9 +35,8 @@ dsubmission = xgb.DMatrix(X_submission)
 
 # Setting Parameters
 print("Setting XGBoost Parameters...")
-param = {'max_depth':2, 'eta':1, 'objective':'multi:softmax'}
+param = {'max_depth':2, 'eta':1, 'objective':'multi:softmax', 'num_class' = 5}
 num_round = 999
-num_class = 5
 
 eval_set = [(dvalidation, "Validation")]
 
@@ -50,7 +49,7 @@ eval_set = [(dvalidation, "Validation")]
 
 # Train
 print("Training XGBoost...")
-bst = xgb.train(param, dtrain, num_round, num_class, evals = eval_set, early_stopping_rounds = 10)
+bst = xgb.train(param, dtrain, num_round, evals = eval_set, early_stopping_rounds = 10)
 
 
 # Predict

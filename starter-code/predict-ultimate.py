@@ -23,7 +23,7 @@ X_train = X_train.drop(columns=['Summary', 'Text'])
 X_validation = X_validation.drop(columns=['Summary', 'Text'])
 X_submission = X_submission.drop(columns = ['Summary', 'Text'])
 
-clf = RandomForestClassifier(max_depth = 8, n_estimators = 30, min_samples_split = 200, max_samples = 0.2, max_features = 3, min_samples_leaf = 50, n_jobs = -1, oob_score = True, class_weight='balanced_subsample', random_state=0)
+clf = RandomForestClassifier(max_depth = 8, n_estimators = 1000, min_samples_split = 200, max_samples = 0.2, max_features = 3, min_samples_leaf = 50, n_jobs = -1, oob_score = True, class_weight='balanced_subsample', random_state=0)
 
 clf.fit(X_train, Y_train)
 

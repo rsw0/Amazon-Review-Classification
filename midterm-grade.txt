@@ -1,0 +1,5 @@
+Grade: 83
+
+Where points were lost:
+-Needed more explanation about model results and selection as well as validation and hyperparameter tuning
+-RMSE
